@@ -71,9 +71,53 @@ const mostBlogs = (blogs) => {
   }
 }
 
+const mostLikes = (blogs) => {
+  const totalsArray = []
+
+  for (blog in blogs) {
+    const currentAuthor = blogs[blog].author
+
+    console.log("totalsArray", totalsArray)
+
+    if (totalsArray[0]) {
+
+      const blogFind = totalsArray.find((element) => currentAuthor === element.author)
+
+      if (blogFind) {
+        blogFind.likes += blogs[blog].likes
+      } else {
+        totalsArray.push({
+          author: blogs[blog].author, 
+          likes: blogs[blog].likes
+        })
+      }
+
+    } else {
+      totalsArray.push({
+        author: blogs[blog].author, 
+        likes: blogs[blog].likes
+      })
+    }
+  }
+
+  const reducer = (accum, item) => {
+    return item.likes > accum.likes
+      ? accum = item
+      : accum
+  }
+  
+  const topAuthor = totalsArray.reduce(reducer, { author: "", likes: 0 })
+
+  return {
+    author: topAuthor.author,
+    likes: topAuthor.likes
+  }
+}
+
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
   mostBlogs,
+  mostLikes,
 }
