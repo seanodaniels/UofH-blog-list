@@ -77,8 +77,6 @@ const mostLikes = (blogs) => {
   for (blog in blogs) {
     const currentAuthor = blogs[blog].author
 
-    console.log("totalsArray", totalsArray)
-
     if (totalsArray[0]) {
 
       const blogFind = totalsArray.find((element) => currentAuthor === element.author)
