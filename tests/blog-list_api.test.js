@@ -95,6 +95,20 @@ test('verify 400 when missing title property', async () => {
   expect(response.status).toBe(400)
 })
 
+test('verify delete works properly', async () => {
+  const initialContentsOfDb = await helper.allEntriesInDb()
+  const condemnedEntry = initialContentsOfDb[0]
+
+  await api
+    .delete(`/api/blogs/${condemnedEntry.id}`)
+    .expect(204)
+
+  const postDeleteContentsOfDb = await helper.allEntriesInDb()
+
+  expect(postDeleteContentsOfDb).not.toContain(condemnedEntry.title)
+
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
