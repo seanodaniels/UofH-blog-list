@@ -109,6 +109,22 @@ test('verify delete works properly', async () => {
 
 })
 
+test('verify update via put', async () => {
+  const initialContent = await helper.allEntriesInDb()
+  const changedEntry = initialContent[0]
+
+  changedEntry.title = `Put change for ${changedEntry.id}`
+
+  await api
+    .put(`/api/blogs/${changedEntry.id}`).send(changedEntry)
+    .expect(200)
+
+  const currentContent = await helper.allEntriesInDb()
+  const titles = currentContent.map(r => r.title)
+
+  expect(titles).toContain(`Put change for ${changedEntry.id}`)
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
