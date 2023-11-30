@@ -10,15 +10,25 @@ blogsRouter.get('/', async (request, response) => {
 blogsRouter.post('/', async (request, response, next) => {
   const body = request.body
 
-  const blog = new Blog({
-    title: body.title,
-    author: body.author,
-    url: body.url,
-    likes: body.likes || 0,
-  })
+  if (body.title && body.url) {
 
-  const savedBlog = await blog.save()
-  response.status(201).json(savedBlog)
+    const blog = new Blog({
+      title: body.title,
+      author: body.author,
+      url: body.url,
+      likes: body.likes || 0,
+    })
+
+    const savedBlog = await blog.save()
+    response.status(201).json(savedBlog)
+  } else {
+    const errorMessage = !body.title
+      ? `Missing title`
+      : `Missing url`
+    
+    console.log(errorMessage)
+    response.status(400).end()
+  }
 })
 
 // END ROUTES

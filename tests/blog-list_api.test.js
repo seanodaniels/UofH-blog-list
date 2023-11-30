@@ -83,6 +83,18 @@ test('verifies that if like property is missing it is set to 0', async () => {
   expect(newEntry.likes).toBe(0)
 })
 
+test('verify 400 when missing title property', async () => {
+  const entryWithoutTitle = {
+    author: 'Sean ODaniels',
+    url: 'https://odaniels.org',
+    likes: 22
+  }
+
+  const response = await api.post('/api/blogs').send(entryWithoutTitle)
+
+  expect(response.status).toBe(400)
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
