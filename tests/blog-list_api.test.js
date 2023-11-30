@@ -43,6 +43,7 @@ test('verify that new entries can be created via POST', async () => {
     title: 'This is a test for a new blog list entry.',
     author: 'Sean ODaniels',
     url: 'https://odaniels.org',
+    likes: 88
   }
 
   await api
@@ -60,6 +61,26 @@ test('verify that new entries can be created via POST', async () => {
   expect(titles).toContain(
     'This is a test for a new blog list entry.'
   )
+})
+
+test('verifies that if like property is missing it is set to 0', async () => {
+  const entryWithoutLikes = {
+    title: 'This is a test for an absent like property a8923iIdkzqlp88.',
+    author: 'Sean ODaniels',
+    url: 'https://odaniels.org'
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(entryWithoutLikes)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const modifiedDb = await helper.allEntriesInDb()
+
+  const newEntry = modifiedDb.find(entry => entry.title === 'This is a test for an absent like property a8923iIdkzqlp88.')
+
+  expect(newEntry.likes).toBe(0)
 })
 
 afterAll(async () => {
