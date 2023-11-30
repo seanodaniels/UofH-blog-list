@@ -38,6 +38,30 @@ test('unique identifier property of the blog posts is named id', async () => {
 
 })
 
+test('verify that new entries can be created via POST', async () => {
+  const newEntry = {
+    title: 'This is a test for a new blog list entry.',
+    author: 'Sean ODaniels',
+    url: 'https://odaniels.org',
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newEntry)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const modifiedDb = await helper.allEntriesInDb()
+
+  expect(modifiedDb).toHaveLength(helper.initialBlogList.length + 1)
+
+  const titles = modifiedDb.map(r => r.title)
+
+  expect(titles).toContain(
+    'This is a test for a new blog list entry.'
+  )
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
