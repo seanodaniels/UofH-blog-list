@@ -39,6 +39,8 @@ test('unique identifier property of the blog posts is named id', async () => {
 })
 
 test('verify that new entries can be created via POST', async () => {
+
+  
   const newEntry = {
     title: 'This is a test for a new blog list entry.',
     author: 'Sean ODaniels',
