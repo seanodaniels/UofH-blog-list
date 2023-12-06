@@ -20,6 +20,7 @@ blogsRouter.post('/', async (request, response) => {
   }
 
   const user = await User.findById(decodedToken.id)
+  
 
   if (body.title && body.url) {
 
@@ -55,12 +56,15 @@ blogsRouter.delete('/:id', async (request, response) => {
   const currentUserId = decodedToken.id
   const blogToDelete = await Blog.findById(request.params.id)
 
-  if (!(currentUserId === blogToDelete.user.toJSON())) {
+  if (!(blogToDelete)) {
+    response.status(401).json({ error: 'invalid id' })
+  } else if (!(currentUserId === blogToDelete.user.toJSON())) {
     response.status(401).json({ error: 'invalid user' })
-  }
+  } else {
 
-  await Blog.findByIdAndDelete(request.params.id)
-  response.status(204).end()
+    // await Blog.findByIdAndDelete(request.params.id)
+    response.status(204).end()
+  }
 
 })
 
