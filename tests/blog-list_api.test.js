@@ -39,7 +39,26 @@ test('unique identifier property of the blog posts is named id', async () => {
 })
 
 test('verify that new entries can be created via POST', async () => {
+  const newUser = {
+    username: 'sean',
+    name: 'Sean ODaniels',
+    password: 'secret'
+  }
 
+  await api
+    .post('/api/users')
+    .send(newUser)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const newLogin = await api
+    .post('/api/login')
+    .send({
+      username: 'sean',
+      password: 'secret'
+    })
+
+  const currentToken = newLogin.body.token
   
   const newEntry = {
     title: 'This is a test for a new blog list entry.',
@@ -51,6 +70,7 @@ test('verify that new entries can be created via POST', async () => {
   await api
     .post('/api/blogs')
     .send(newEntry)
+    .set({ Authorization: `Bearer ${currentToken}` })
     .expect(201)
     .expect('Content-Type', /application\/json/)
 
@@ -63,7 +83,50 @@ test('verify that new entries can be created via POST', async () => {
   expect(titles).toContain(
     'This is a test for a new blog list entry.'
   )
+
+  await User.deleteMany({})
+
 })
+
+test('verify that new entries fail if token not provided', async () => {
+  const newUser = {
+    username: 'sean',
+    name: 'Sean ODaniels',
+    password: 'secret'
+  }
+
+  await api
+    .post('/api/users')
+    .send(newUser)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const newLogin = await api
+    .post('/api/login')
+    .send({
+      username: 'sean',
+      password: 'secret'
+    })
+
+  const currentToken = newLogin.body.token
+  
+  const newEntry = {
+    title: 'This is a test for a new blog list entry.',
+    author: 'Sean ODaniels',
+    url: 'https://odaniels.org',
+    likes: 88
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newEntry)
+    .expect(401)
+
+  await User.deleteMany({})
+
+})
+
+
 
 test('verifies that if like property is missing it is set to 0', async () => {
   const entryWithoutLikes = {
