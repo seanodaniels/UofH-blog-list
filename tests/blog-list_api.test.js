@@ -1,10 +1,10 @@
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
-
 const api = supertest(app)
-
+const bcrypt = require('bcrypt')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const helper = require('./test_helper')
 
 beforeEach(async () => {
@@ -123,6 +123,40 @@ test('verify update via put', async () => {
   const titles = currentContent.map(r => r.title)
 
   expect(titles).toContain(`Put change for ${changedEntry.id}`)
+})
+
+describe('when there is initially one user in db', () => {
+  beforeEach(async () => {
+    await User.deleteMany({})
+
+    const passwordHash = await bcrypt.hash('sekret', 10)
+    const user = new User({ username: 'root', passwordHash })
+
+    await user.save()
+  })
+
+  test('creation succeeds with fresh username', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      username: 'mluukkai',
+      name: 'Matti Luukkainen',
+      password: 'salainen',
+    }
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const usersAtEnd = await helper.usersInDb()
+    
+    expect(usersAtEnd).toHaveLength(usersAtStart.length + 1)
+
+    const userNames = usersAtEnd.map(user => user.username)
+    expect(userNames).toContain(newUser.username)
+  })
 })
 
 afterAll(async () => {
