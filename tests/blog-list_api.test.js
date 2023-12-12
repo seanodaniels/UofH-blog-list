@@ -7,6 +7,8 @@ const Blog = require('../models/blog')
 const User = require('../models/user')
 const helper = require('./test_helper')
 
+// need 'let authHeader'
+
 beforeEach(async () => {
   await Blog.deleteMany({})
 
@@ -16,6 +18,11 @@ beforeEach(async () => {
   const promiseArray = blogObjects.map(r => r.save())
 
   await Promise.all(promiseArray)
+
+  // should add code to prep a single user entry: delete all existing,
+  // grab the first user from the helper, login with said user,
+  // then store the authorization code into a constant (initially declare
+  // this outside the describe block.
 })
 
 test('test that makes an HTTP GET request to the /api/blogs URL', async () => {

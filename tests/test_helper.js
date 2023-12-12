@@ -1,5 +1,6 @@
 const Blog = require('../models/blog')
-const Users = require('../models/user')
+const User = require('../models/user')
+const bcrypt = require('bcrypt')
 
 const initialBlogList = [
   {
